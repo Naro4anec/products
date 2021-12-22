@@ -13,6 +13,13 @@
 </head>
 <body class="antialiased">
     @include('inc.header')
+
+    <div id="app">
+        <app></app>
+    </div>
+
     @yield('content')
+
+    <script src="{{mix('js/app.js')}}"></script>
 </body>
 </html>
