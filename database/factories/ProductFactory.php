@@ -17,9 +17,9 @@ class ProductFactory extends Factory
     {
         return [
             'name' => 'Товар ' . $this->faker->name,
-            'description' => $this->faker->randomHtml,
+            'description' => '<p>' . $this->faker->realText . '</p>',
             'price' => $this->faker->randomFloat(2, 1, 500),
-            'shop_id' => $this->faker->numberBetween(1, 5)
+            'shop_id' => $this->faker->numberBetween(16, 20)
         ];
     }
 }

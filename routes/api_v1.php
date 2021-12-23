@@ -23,5 +23,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 //*/
 
-Route::get('product/list', [ProductController::class, 'getList'])->name('api-product-list');
-Route::get('shop/list', [ShopController::class, 'getList'])->name('api-shop-list');
+Route::apiResources([
+    'product' => ProductController::class,
+    'shop' => ShopController::class
+]);
+
+//Route::get('product/list', [ProductController::class, 'getList'])->name('api-product-list');
+//Route::get('shop/list', [ShopController::class, 'getList'])->name('api-shop-list');
+//Route::get('shop/working', [ShopController::class, 'getWorkingList'])->name('api-shop-working');

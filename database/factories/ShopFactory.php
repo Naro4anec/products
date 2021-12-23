@@ -26,7 +26,7 @@ class ShopFactory extends Factory
     {
         return [
             'name' => 'Магазин ' . $this->faker->name,
-            'url' => $this->faker->url,
+            'url' => $this->faker->domainName,
             'working_time_open' => $this->faker->time,
             'working_time_close' => $this->faker->time
         ];

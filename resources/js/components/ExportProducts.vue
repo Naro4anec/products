@@ -1,7 +1,12 @@
 <template>
     <div class="container">
+        <p>
+            Будут выгруженны товары из магазинов, которые открыты в текущий момент времени.
+            Описания к товарам не будут содержать HTML теги.
+            Формат файла XML.
+        </p>
         <div class="row">
-            ExportProduct
+
         </div>
     </div>
 </template>

@@ -12,7 +12,7 @@ Vue.use(VueRouter);
 import App from "./components/App";
 import ProductList from "./components/ProductList";
 import ExportProducts from "./components/ExportProducts";
-import ProductsList from "./components/products/List";
+import ProductEdit from "./components/product/Edit";
 
 //Vue.component('app', require('./components/App').default);
 
@@ -28,6 +28,12 @@ const router = new VueRouter({
             path: '/export',
             name: 'export-product',
             component: ExportProducts
+        }
+        ,{
+            path: '/product/:productId',
+            name: 'product-edit',
+            component: ProductEdit,
+            props: true
         }
     ]
 });
