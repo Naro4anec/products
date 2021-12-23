@@ -3,6 +3,7 @@
         <div class="alert alert-danger" role="alert" v-if="errored">
             Ошибка получения списка товаров.
         </div>
+
         <table class="table">
             <thead>
                 <tr>
@@ -19,6 +20,11 @@
                 </tr>
             </tbody>
         </table>
+        <div class="text-center">
+            <div class="spinner-border" role="status" v-if="loaded">
+                <span class="visually-hidden"></span>
+            </div>
+        </div>
 
     </div>
 </template>
@@ -27,26 +33,33 @@
 		data(){
 			return {
 				productList: [],
-                errored: false
+                errored: false,
+				loaded: false,
 			}
 		},
     	mounted() {
-			this.initList();
-    		console.log('Component ProductList Mounted');
+			this.initProductList();
 		},
 		methods: {
-			initList: function initList() {
+			initProductList() {
 				this.errored = false;
+				this.loaded = true;
 				this.productList = [];
-				axios.get('/api/v1/products')
+				axios.get('/api/v1/shop/list')
 					.then(response => {
-						if(!!response.data.products){
-							this.productList = response.data.products;
+						return axios.get('/api/v1/product/list');
+					})
+					.then(response => {
+						if(!!response.data.data){
+							this.productList = response.data.data;
                         }
 					}).catch(error => {
 					    console.log(['Error', error]);
 					    this.errored = true;
-				    });
+				    })
+                    .finally(() =>{
+                        this.loaded = false;
+                    });
 			}
 
 		}

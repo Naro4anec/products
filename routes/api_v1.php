@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\ProductController;
+use App\Http\Controllers\Api\V1\ShopController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,13 +16,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+/*/
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-Route::get('/api/v1/products', [ProductController::class, 'products']);
-/*/
-Route::apiResources([
-   'products' =>  ProductController::class
-]);
 //*/
+
+Route::get('product/list', [ProductController::class, 'getList'])->name('api-product-list');
+Route::get('shop/list', [ShopController::class, 'getList'])->name('api-shop-list');

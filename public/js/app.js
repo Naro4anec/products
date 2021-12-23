@@ -2159,30 +2159,41 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
       productList: [],
-      errored: false
+      errored: false,
+      loaded: false
     };
   },
   mounted: function mounted() {
-    this.initList();
-    console.log('Component ProductList Mounted');
+    this.initProductList();
   },
   methods: {
-    initList: function initList() {
+    initProductList: function initProductList() {
       var _this = this;
 
       this.errored = false;
+      this.loaded = true;
       this.productList = [];
-      axios.get('/api/v1/products').then(function (response) {
-        if (!!response.data.products) {
-          _this.productList = response.data.products;
+      axios.get('/api/v1/shop/list').then(function (response) {
+        return axios.get('/api/v1/product/list');
+      }).then(function (response) {
+        if (!!response.data.data) {
+          _this.productList = response.data.data;
         }
       })["catch"](function (error) {
         console.log(['Error', error]);
         _this.errored = true;
+      })["finally"](function () {
+        _this.loaded = false;
       });
     }
   }
@@ -2921,6 +2932,16 @@ var render = function () {
         }),
         0
       ),
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "text-center" }, [
+      _vm.loaded
+        ? _c(
+            "div",
+            { staticClass: "spinner-border", attrs: { role: "status" } },
+            [_c("span", { staticClass: "visually-hidden" })]
+          )
+        : _vm._e(),
     ]),
   ])
 }
