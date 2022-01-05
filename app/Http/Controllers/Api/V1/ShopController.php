@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ShopCollection;
 use App\Models\Shop;
+use App\Services\ShopExportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use App\Exports\ShopsExport;
 
 class ShopController extends Controller
 {
@@ -66,4 +69,20 @@ class ShopController extends Controller
     {
         //
     }
+
+    public function export(ShopExportService $service)
+    {
+        $fileUrl = $service->export('shops');
+        $result = [
+            'status' => 'success'
+        ];
+        if(!empty($fileUrl)){
+            $result['url'] = $fileUrl;
+        }else{
+            $result['status'] = 'error';
+            $result['message'] = 'Ошибка экспорта.';
+        }
+        return $result;
+    }
+
 }

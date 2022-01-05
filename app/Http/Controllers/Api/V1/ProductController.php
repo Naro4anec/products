@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductUpdateRequest;
 use App\Http\Resources\ProductCollection;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -38,7 +40,7 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        //
+        return new ProductResource(Product::findOrFail($id));
     }
 
     /**
@@ -48,9 +50,11 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ProductUpdateRequest $request, Product $product)
     {
-        //
+
+        $product->update($request->validated());
+        return new ProductResource($product);
     }
 
     /**
@@ -62,5 +66,11 @@ class ProductController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function getByShops(array $shopIds)
+    {
+        $product = new Product();
+        return new ProductCollection($product->whereIn('shop_id', $shopIds));
     }
 }

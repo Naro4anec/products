@@ -74,7 +74,6 @@
 							}
                         }
 					}).catch(error => {
-					    console.log(['Error', error]);
 					    this.errored = true;
 				    })
                     .finally(() =>{

@@ -25,7 +25,6 @@
             }
         },
     	mounted() {
-			console.log('Component App Mounted');
 		}
 
 	}

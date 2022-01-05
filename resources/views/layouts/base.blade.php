@@ -19,6 +19,7 @@
 
     @yield('content')
 
+    @include('inc.footer')
     <script src="{{mix('js/app.js')}}"></script>
 </body>
 </html>

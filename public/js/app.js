@@ -2090,9 +2090,7 @@ __webpack_require__.r(__webpack_exports__);
       desks: []
     };
   },
-  mounted: function mounted() {
-    console.log('Component App Mounted');
-  }
+  mounted: function mounted() {}
 });
 
 /***/ }),
@@ -2121,9 +2119,54 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  mounted: function mounted() {
-    console.log('Component ExportProduct Mounted');
+  mounted: function mounted() {},
+  data: function data() {
+    return {
+      errored: false,
+      loaded: false,
+      errorMessage: '',
+      fileUrl: ''
+    };
+  },
+  methods: {
+    startExport: function startExport() {
+      var _this = this;
+
+      this.loaded = true;
+      this.errorMessage = '';
+      this.fileUrl = '';
+      this.errored = false;
+      axios.get('/api/v1/shop/export').then(function (response) {
+        if (response.data.status == 'success') {
+          _this.fileUrl = response.data.url;
+        } else {
+          _this.errored = true;
+          _this.errorMessage = response.data.message;
+        }
+
+        console.log(['ex', response]);
+      })["catch"](function (error) {
+        _this.errored = true;
+      })["finally"](function () {
+        _this.loaded = false;
+      });
+      console.log('export');
+    }
   }
 });
 
@@ -2218,7 +2261,6 @@ __webpack_require__.r(__webpack_exports__);
           }
         }
       })["catch"](function (error) {
-        console.log(['Error', error]);
         _this.errored = true;
       })["finally"](function () {
         _this.loaded = false;
@@ -2257,35 +2299,90 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: ['productId'],
   data: function data() {
     return {
       name: '',
+      description: '',
+      price: 0,
       errored: false,
-      loaded: false
+      loaded: false,
+      errorMessage: ''
     };
   },
   mounted: function mounted() {
     this.initProduct();
-    console.log(['Mounted Edit Prod', this.productId]);
   },
   methods: {
     initProduct: function initProduct() {
       var _this = this;
 
-      axios.get('/api/v1/product/item/' + this.productId).then(function (response) {
+      this.loaded = true;
+      this.errorMessage = '';
+      axios.get('/api/v1/product/' + this.productId).then(function (response) {
         if (!!response.data.data) {
-          _this.shopList = response.data.data;
-
-          for (var i = 0; i < _this.shopList.length; i++) {
-            _this.shopProductLinks[_this.shopList[i].id] = [];
-          }
+          _this.name = response.data.data.name;
+          _this.description = response.data.data.description;
+          _this.price = parseFloat(response.data.data.price);
         }
       })["catch"](function (error) {
         _this.errored = true;
       })["finally"](function () {
         _this.loaded = false;
+      });
+    },
+    save: function save() {
+      var _this2 = this;
+
+      this.loaded = true;
+      this.errorMessage = '';
+      axios.post('/api/v1/product/' + this.productId, {
+        _method: 'PUT',
+        name: this.name,
+        description: this.description,
+        price: this.price
+      }).then(function (response) {
+        _this2.$router.push({
+          name: 'product-list'
+        });
+      })["catch"](function (error) {
+        _this2.errored = true;
+        _this2.errorMessage = '';
+
+        if (!!error.response.data.errors) {
+          for (var errorKey in error.response.data.errors) {
+            _this2.errorMessage += error.response.data.errors[errorKey].join(' ') + ' ';
+          }
+        }
+      })["finally"](function () {
+        _this2.loaded = false;
+      });
+    },
+    cancel: function cancel() {
+      this.$router.push({
+        name: 'product-list'
       });
     }
   }
@@ -2919,24 +3016,73 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("p", [
-        _vm._v(
-          "\n        Будут выгруженны товары из магазинов, которые открыты в текущий момент времени.\n        Описания к товарам не будут содержать HTML теги.\n        Формат файла XML.\n    "
-        ),
-      ]),
+  return _c("div", { staticClass: "container" }, [
+    _vm.errored
+      ? _c(
+          "div",
+          { staticClass: "alert alert-danger", attrs: { role: "alert" } },
+          [
+            _c("p", [_vm._v("Ошибка.")]),
+            _c("p"),
+            _c("p", [_vm._v(_vm._s(_vm.errorMessage))]),
+          ]
+        )
+      : _vm._e(),
+    _vm._v(" "),
+    _c("p", [
+      _vm._v(
+        "\n        Будут выгруженны товары из магазинов, которые открыты в текущий момент времени.\n        Описания к товарам не будут содержать HTML теги.\n        Формат файла XML.\n    "
+      ),
+    ]),
+    _vm._v(" "),
+    !!_vm.fileUrl
+      ? _c(
+          "div",
+          { staticClass: "alert alert-success", attrs: { role: "alert" } },
+          [
+            _vm._v("\n        Экспорт завершен: "),
+            _c(
+              "a",
+              { attrs: { href: _vm.fileUrl, target: "_blank", download: "" } },
+              [_vm._v("Скачать")]
+            ),
+            _vm._v(".\n    "),
+          ]
+        )
+      : _vm._e(),
+    _vm._v(" "),
+    _c("div", { staticClass: "row" }, [
+      !_vm.loaded
+        ? _c("div", { staticClass: "d-grid gap-2 mx-auto" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-success",
+                attrs: { type: "button" },
+                on: {
+                  click: function ($event) {
+                    return _vm.startExport()
+                  },
+                },
+              },
+              [_vm._v("Экспортировать")]
+            ),
+          ])
+        : _vm._e(),
       _vm._v(" "),
-      _c("div", { staticClass: "row" }),
-    ])
-  },
-]
+      _c("div", { staticClass: "text-center" }, [
+        _vm.loaded
+          ? _c(
+              "div",
+              { staticClass: "spinner-border", attrs: { role: "status" } },
+              [_c("span", { staticClass: "visually-hidden" })]
+            )
+          : _vm._e(),
+      ]),
+    ]),
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -3127,7 +3273,12 @@ var render = function () {
       ? _c(
           "div",
           { staticClass: "alert alert-danger", attrs: { role: "alert" } },
-          [_vm._v("\n        Ошибка получения списка товаров.\n    ")]
+          [
+            _vm._v("\n        Ошибка запроса к товару.\n        "),
+            !!_vm.errorMessage
+              ? _c("p", [_vm._v(_vm._s(_vm.errorMessage))])
+              : _vm._e(),
+          ]
         )
       : _vm._e(),
     _vm._v(" "),
@@ -3141,33 +3292,144 @@ var render = function () {
         : _vm._e(),
     ]),
     _vm._v(" "),
-    _c("div", { staticClass: "mb-3" }, [
-      _c("label", { staticClass: "form-label", attrs: { for: "name" } }, [
-        _vm._v("Название товара"),
-      ]),
-      _vm._v(" "),
-      _c("input", {
-        directives: [
-          {
-            name: "model",
-            rawName: "v-model",
-            value: _vm.name,
-            expression: "name",
-          },
-        ],
-        staticClass: "form-control",
-        attrs: { type: "text", id: "name" },
-        domProps: { value: _vm.name },
-        on: {
-          input: function ($event) {
-            if ($event.target.composing) {
-              return
-            }
-            _vm.name = $event.target.value
-          },
-        },
-      }),
-    ]),
+    !_vm.loaded
+      ? _c("div", [
+          _c("div", { staticClass: "text-center" }, [
+            _vm.loaded
+              ? _c(
+                  "div",
+                  { staticClass: "spinner-border", attrs: { role: "status" } },
+                  [_c("span", { staticClass: "visually-hidden" })]
+                )
+              : _vm._e(),
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "mb-3" }, [
+            _c("label", { staticClass: "form-label", attrs: { for: "name" } }, [
+              _vm._v("Название"),
+            ]),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.name,
+                  expression: "name",
+                },
+              ],
+              staticClass: "form-control",
+              attrs: { type: "text", id: "name" },
+              domProps: { value: _vm.name },
+              on: {
+                input: function ($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.name = $event.target.value
+                },
+              },
+            }),
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "mb-3" }, [
+            _c(
+              "label",
+              { staticClass: "form-label", attrs: { for: "price" } },
+              [_vm._v("Цена")]
+            ),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.price,
+                  expression: "price",
+                },
+              ],
+              staticClass: "form-control",
+              attrs: { type: "number", id: "price" },
+              domProps: { value: _vm.price },
+              on: {
+                input: function ($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.price = $event.target.value
+                },
+              },
+            }),
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "mb-3" }, [
+            _c(
+              "label",
+              { staticClass: "form-label", attrs: { for: "description" } },
+              [_vm._v("Описание")]
+            ),
+            _vm._v(" "),
+            _c("textarea", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.description,
+                  expression: "description",
+                },
+              ],
+              staticClass: "form-control",
+              attrs: { id: "description", rows: "3" },
+              domProps: { value: _vm.description },
+              on: {
+                input: function ($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.description = $event.target.value
+                },
+              },
+            }),
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "btn-group",
+              attrs: { role: "group", "aria-label": "action-buttons" },
+            },
+            [
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-success",
+                  attrs: { type: "button" },
+                  on: {
+                    click: function ($event) {
+                      return _vm.save()
+                    },
+                  },
+                },
+                [_vm._v("Сохранить")]
+              ),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-outline-primary",
+                  attrs: { type: "button" },
+                  on: {
+                    click: function ($event) {
+                      return _vm.cancel()
+                    },
+                  },
+                },
+                [_vm._v("Отмена")]
+              ),
+            ]
+          ),
+        ])
+      : _vm._e(),
   ])
 }
 var staticRenderFns = []

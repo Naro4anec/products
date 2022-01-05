@@ -12,5 +12,4 @@ class SpaController extends Controller
         return view('index');
     }
 
-
 }
