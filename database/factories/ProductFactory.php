@@ -19,7 +19,7 @@ class ProductFactory extends Factory
             'name' => 'Товар ' . $this->faker->name,
             'description' => '<p>' . $this->faker->realText . '</p>',
             'price' => $this->faker->randomFloat(2, 1, 500),
-            'shop_id' => $this->faker->numberBetween(16, 20)
+            'shop_id' => $this->faker->numberBetween(1, 5)
         ];
     }
 }
