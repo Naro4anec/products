@@ -79,7 +79,8 @@ class ShopExportService
             $shop['products'] = ProductCollection::make($productLinks[$shop->id]);
         }
 
-        $exportObj = new XMLExport('shops');
+        $exportObj = new XMLExport();
+		$exportObj->setFileName('shops');
         $exportObj->fillData($shopList);
         $exportObj->setStructure($this->makeXMLStruct());
 

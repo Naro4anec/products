@@ -12,17 +12,15 @@ abstract class BaseExport
 
     protected $exportData = null;
     protected $fileName = '';
-    protected $filePath = '';
+    protected $filePath = '/';
     protected $lastError = '';
 
     /**
      * BaseExport constructor.
-     * @param string $filePath
      */
-    public function __construct(string $fileName, string $filePath = '/')
+    public function __construct()
     {
-        $this->setFileName($fileName);
-        $this->setFilePath($filePath);
+		
     }
 
     /**
