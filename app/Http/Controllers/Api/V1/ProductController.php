@@ -16,20 +16,9 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index() : ProductCollection
     {
         return new ProductCollection(Product::all());
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
     }
 
     /**
@@ -38,7 +27,7 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id) : ProductResource
     {
         return new ProductResource(Product::findOrFail($id));
     }
@@ -50,25 +39,14 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(ProductUpdateRequest $request, Product $product)
+    public function update(ProductUpdateRequest $request, Product $product) : ProductResource
     {
 
         $product->update($request->validated());
         return new ProductResource($product);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
-
-    public function getByShops(array $shopIds)
+    public function getByShops(array $shopIds) : ProductCollection
     {
         $product = new Product();
         return new ProductCollection($product->whereIn('shop_id', $shopIds));

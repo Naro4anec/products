@@ -56,14 +56,35 @@ class ShopExportService
      */
     public function export() : string
     {
-        $shopList = $this->getWorkingShopList();
+        $shopList = $this->getShopList();
+		$exportStructure = $this->makeXMLStruct();
+		return $this->makeExportFile($shopList, $exportStructure);
+    }
+	
+	public function makeExportFile(ShopCollection &$shopList, Structure &$exportStructure) : string
+	{
+		$exportObj = new XMLExport();
+		$exportObj->setFileName('shops');
+        $exportObj->fillData($shopList);
+        $exportObj->setStructure($exportStructure);
+
+        $result = '';
+        if($exportObj->makeFile()){
+            $result = '/storage'.$exportObj->getFilePath().$exportObj->getFileName();
+        }
+		return $result;
+	}
+	
+	public function getShopList() : ShopCollection
+	{
+		$shopList = $this->getWorkingShopList();
         $this->formatShopList($shopList);
         $shopIds = $shopList->pluck('id')->toArray();
         $productList = $this->getProductListByShops($shopIds);
         $this->formatProductList($productList);
 
         $productLinks = [];
-        foreach ($productList as &$product)
+        foreach ($productList as $product)
         {
             if(!isset($productLinks[$product->shop_id])){
                 $productLinks[$product->shop_id] = [];
@@ -71,25 +92,15 @@ class ShopExportService
             $productLinks[$product->shop_id][] = $product;
         }
 
-        foreach ($shopList as &$shop){
+        foreach ($shopList as $shop){
             $shop['products'] = null;
             if(!isset($productLinks[$shop->id])){
                 continue;
             }
             $shop['products'] = ProductCollection::make($productLinks[$shop->id]);
         }
-
-        $exportObj = new XMLExport();
-		$exportObj->setFileName('shops');
-        $exportObj->fillData($shopList);
-        $exportObj->setStructure($this->makeXMLStruct());
-
-        $result = '';
-        if($exportObj->makeFile()){
-            $result = '/storage'.$exportObj->getFilePath().$exportObj->getFileName();
-        }
-        return $result;
-    }
+		return $shopList;
+	}
 
     /**
      * @return ShopCollection
